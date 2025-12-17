@@ -28,7 +28,7 @@ if uploaded_files:
             columnas_interes.columns = ["DOCUMENTO", "NUMERO DE DOCUMENTO", "NOMBRE", "REFERENCIA", "MONTO"]
 
             # Filtrar montos mayores a 30k
-            filtrado = columnas_interes[columnas_interes["Monto"] > 30000]
+            filtrado = columnas_interes[columnas_interes["MONTO"] > 30000]
 
             # Agregar nombre del archivo (útil para trazabilidad)
             filtrado["Archivo_Origen"] = file.name
