@@ -47,7 +47,7 @@ if uploaded_files:
             filtrado = columnas_interes[columnas_interes["MONTO"] > 30000]
 
             # Trazabilidad
-            filtrado["Archivo_Origen"] = file.name
+            filtrado["ARCHIVO DE ORIGEN"] = file.name
 
             dataframes.append(filtrado)
 
