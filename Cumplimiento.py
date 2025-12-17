@@ -60,8 +60,8 @@ if uploaded_files:
         st.success(f"✅ Se encontraron {len(resultado_final)} clientes con montos > 30K")
         st.dataframe(resultado_final, use_container_width=True)
 
-       # ===============================
-        # Exportar Excel sin notación científica
+        # ===============================
+        # Exportar Excel formateado
         # ===============================
         buffer = BytesIO()
         resultado_final.to_excel(buffer, index=False, engine="openpyxl")
@@ -70,10 +70,23 @@ if uploaded_files:
         wb = load_workbook(buffer)
         ws = wb.active
         
-        # REFERENCIA = columna D
+        # 1️⃣ Forzar REFERENCIA como texto (columna D)
         for col in ws.iter_cols(min_col=4, max_col=4, min_row=2):
             for cell in col:
                 cell.number_format = "@"
+        
+        # 2️⃣ Ajustar ancho de columnas automáticamente
+        from openpyxl.utils import get_column_letter
+        
+        for column_cells in ws.columns:
+            max_length = 0
+            column_letter = get_column_letter(column_cells[0].column)
+        
+            for cell in column_cells:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+        
+            ws.column_dimensions[column_letter].width = max_length + 3
         
         buffer_final = BytesIO()
         wb.save(buffer_final)
@@ -85,7 +98,6 @@ if uploaded_files:
             file_name="clientes_mayores_30k.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
 
     else:
         st.warning("No se encontraron registros con montos mayores a 30K.")
