@@ -25,7 +25,7 @@ if uploaded_files:
 
             # Columnas por posición (B, C, D, I, M)
             columnas_interes = df.iloc[:, [1, 2, 3, 8, 12]].copy()
-            columnas_interes.columns = ["Col_B", "Col_C", "Col_D", "Col_I", "Monto"]
+            columnas_interes.columns = ["DOCUMENTO", "NUMERO DE DOCUMENTO", "NOMBRE", "REFERENCIA", "MONTO"]
 
             # Filtrar montos mayores a 30k
             filtrado = columnas_interes[columnas_interes["Monto"] > 30000]
