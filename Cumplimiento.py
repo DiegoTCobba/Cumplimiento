@@ -29,7 +29,7 @@ if uploaded_files:
             columnas_interes = df.iloc[:, [1, 2, 3, 8, 12]].copy()
             columnas_interes.columns = [
                 "DOCUMENTO",
-                "NUMERO DE DOCUMENTO",
+                "NUMERO DE DOCUMENTO ",
                 "NOMBRE",
                 "REFERENCIA",
                 "MONTO"
