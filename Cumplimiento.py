@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
+from openpyxl import load_workbook
 
 st.set_page_config(
     page_title="Filtro de Clientes > 30K",
@@ -34,16 +35,19 @@ if uploaded_files:
                 "MONTO"
             ]
 
-            # Asegurar que MONTO sea numérico
+            # Tipos correctos
             columnas_interes["MONTO"] = pd.to_numeric(
                 columnas_interes["MONTO"], errors="coerce"
             )
 
+            # 🔐 CLAVE: REFERENCIA como TEXTO
+            columnas_interes["REFERENCIA"] = columnas_interes["REFERENCIA"].astype(str)
+
             # Filtrar montos mayores a 30k
             filtrado = columnas_interes[columnas_interes["MONTO"] > 30000]
 
-            # Agregar nombre del archivo (trazabilidad)
-            filtrado["ARCHIVO ORIGEN"] = file.name
+            # Trazabilidad
+            filtrado["Archivo_Origen"] = file.name
 
             dataframes.append(filtrado)
 
@@ -56,17 +60,31 @@ if uploaded_files:
         st.success(f"✅ Se encontraron {len(resultado_final)} clientes con montos > 30K")
         st.dataframe(resultado_final, use_container_width=True)
 
-        # Descargar resultado en Excel
+        # ===============================
+        # Exportar Excel sin notación científica
+        # ===============================
         buffer = BytesIO()
         resultado_final.to_excel(buffer, index=False, engine="openpyxl")
         buffer.seek(0)
 
+        wb = load_workbook(buffer)
+        ws = wb.active
+
+        # REFERENCIA = columna D (4)
+        for cell in ws.iter_cols(min_col=4, max_col=4, min_row=2)[0]:
+            cell.number_format = "@"
+
+        buffer_final = BytesIO()
+        wb.save(buffer_final)
+        buffer_final.seek(0)
+
         st.download_button(
             label="⬇️ Descargar resultado en Excel",
-            data=buffer,
+            data=buffer_final,
             file_name="clientes_mayores_30k.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
     else:
         st.warning("No se encontraron registros con montos mayores a 30K.")
+
