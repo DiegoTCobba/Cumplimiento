@@ -60,30 +60,32 @@ if uploaded_files:
         st.success(f"✅ Se encontraron {len(resultado_final)} clientes con montos > 30K")
         st.dataframe(resultado_final, use_container_width=True)
 
-        # ===============================
+       # ===============================
         # Exportar Excel sin notación científica
         # ===============================
         buffer = BytesIO()
         resultado_final.to_excel(buffer, index=False, engine="openpyxl")
         buffer.seek(0)
-
+        
         wb = load_workbook(buffer)
         ws = wb.active
-
-        # REFERENCIA = columna D (4)
-        for cell in ws.iter_cols(min_col=4, max_col=4, min_row=2)[0]:
-            cell.number_format = "@"
-
+        
+        # REFERENCIA = columna D
+        for col in ws.iter_cols(min_col=4, max_col=4, min_row=2):
+            for cell in col:
+                cell.number_format = "@"
+        
         buffer_final = BytesIO()
         wb.save(buffer_final)
         buffer_final.seek(0)
-
+        
         st.download_button(
             label="⬇️ Descargar resultado en Excel",
             data=buffer_final,
             file_name="clientes_mayores_30k.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
 
     else:
         st.warning("No se encontraron registros con montos mayores a 30K.")
